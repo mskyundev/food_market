@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team3.mappers.ProductMapper">
+
+	<insert id="productinsert">
+		INSERT 
+		INTO product(
+		pd_category, pd_idx, pd_name , pd_price , pd_size ,pd_origin, pd_stock, member_mb_id,pd_img_name_f,pd_img_name_s )
+		VALUES(
+		#{pd_category},#{pd_idx},#{pd_name},#{pd_price},#{pd_size},#{pd_origin},#{pd_stock },#{member_mb_id },#{pd_img_name_f},#{pd_img_name_s})
+	</insert>
+	
+	<update id="hitUp">
+<!-- 		update product set hit=hit+1 WHERE pd_idx=#{pd_idx} -->
+	</update>
+
+	<select id="read" resultType="ProductVO">
+		SELECT
+			*
+		FROM product
+		WHERE pd_idx=#{pd_idx}
+	</select>
+
+	<update id="productupdate">
+		UPDATE 
+			product
+		SET	pd_category=#{pd_category},	pd_name=#{pd_name},pd_price=#{pd_price},pd_size=#{pd_size},pd_origin=#{pd_origin},pd_stock=#{pd_stock}
+		WHERE pd_idx=#{pd_idx}
+	</update>
+
+	<delete id="productdelete">
+		DELETE 
+		FROM product 
+		WHERE pd_idx=#{pd_idx}
+	</delete>
+
+	
+	<!-- 판매자 페이지 -->
+	<!-- #{startPage}는 getStartPage()메소드를 호출하는 것과 같다. -->
+	<select id="sellerListCriteria" parameterType="hashmap" resultType="ProductVO">
+	<![CDATA[
+		SELECT 
+			*
+		FROM product
+		WHERE pd_idx > 0 and member_mb_id = #{mb_id}
+		ORDER BY pd_idx DESC, pd_date 
+		DESC limit #{startPage}, #{numPerPage} 	
+	]]>	
+	</select>
+	
+	<!-- sellerListCountData -->
+	<select id="sellerListCountData" resultType="int">
+		SELECT 
+			count(pd_idx) 
+		FROM product 
+		WHERE member_mb_id = #{mb_id }
+	</select>
+	
+	
+	
+	<!-- 상품 전체 갯수 세서 가장 큰 수 가져오기 -->
+	<select id="listCountData" resultType="int">
+		SELECT 
+			ifnull(max(pd_idx),0) 
+		FROM product
+	</select>
+	
+	
+	
+	<!-- 검색하기  -->
+
+	<!-- MyBatis에서 제공하는 <include>, <sql>  -->
+	<sql id = "findTypeSQL">
+		<if test="findType != null and findType != '' ">
+				and pd_category =#{findType}
+		</if>	
+	</sql>
+	
+	<sql id = "keywordSQL">
+		<if test="keyword != null and keyword != '' ">
+				and pd_name like CONCAT('%', #{keyword}, '%')
+		</if>	
+	</sql>
+
+	<select id="listFind" resultType="ProductVO">
+	<![CDATA[
+		SELECT 
+			* 
+		FROM product
+		WHERE pd_idx  > 0  
+	]]>	
+		<!-- 검색 기능 if문으로 걸러준다. -->
+		<include refid="findTypeSQL"></include>
+		<include refid="keywordSQL"></include>
+	<![CDATA[	
+		ORDER BY pd_idx 
+		DESC limit #{startPage}, #{numPerPage}
+	]]>
+	</select>
+	
+	<select id="findCountData" resultType="int">
+	<![CDATA[
+		SELECT 
+			count(pd_idx)
+		FROM product
+		WHERE pd_idx > 0
+	]]>
+		<!-- 검색 기능 if문으로 걸러준다. -->		
+		<include refid="findTypeSQL"></include>
+		<include refid="keywordSQL"></include>
+	</select>	
+
+</mapper>

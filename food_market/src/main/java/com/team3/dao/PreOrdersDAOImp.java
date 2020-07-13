@@ -15,7 +15,7 @@ public class PreOrdersDAOImp implements PreOrdersDAO {
 	@Inject
 	SqlSession sqlSession;
 	
-	private static final String Namespace = "com.team3.mapper.orderMapper";
+	private static final String Namespace = "com.team3.mappers.OrdersMapper";
 	
 	//임시 결제 정보 추가
 	@Override

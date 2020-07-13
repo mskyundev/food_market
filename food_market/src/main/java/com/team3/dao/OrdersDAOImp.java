@@ -16,7 +16,7 @@ public class OrdersDAOImp implements OrdersDAO {
 	@Inject
 	SqlSession sqlSession;
 	
-	private static final String Namespace = "com.team3.mapper.orderMapper";
+	private static final String Namespace = "com.team3.mappers.OrdersMapper";
 	
 	//주문 정보 추가
 	@Override

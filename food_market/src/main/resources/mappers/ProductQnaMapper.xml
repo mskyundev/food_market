@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team3.mappers.ProductQnaMapper">
+	<!--    상품문의 글쓰기               -->
+	<select id="getBoardReRef" parameterType="ProductQnaVO" resultType="int">
+	   
+        SELECT IFNULL(MAX(qna_re_ref), 0) + 1 
+        FROM product_qna 
+          
+	</select>
+	
+    <select id="maxnum" parameterType="ProductQnaVO" resultType="int">
+       SELECT IFNULL(MAX(qna_num), 0) + 1 
+    	from
+    		product_qna 
+    
+    </select>
+    
+
+    <insert id="productqnainsert">
+
+    	insert into 
+    		product_qna(qna_content,qna_data,mb_id,pd_idx,qna_re_ref,qna_re_lev,qna_re_seq)
+    		
+    	    values(
+    		
+    		#{qna_content}
+    		,now()
+    		,#{mb_id}
+    		,#{pd_idx}
+    		,#{qna_re_ref}
+    		,0
+    		,0
+    		)
+    </insert>
+
+
+	<!--         상품문의 리스트              -->
+     <select id="productqnalist"  parameterType="hashmap" resultType="ProductQnaVO">
+ 	<![CDATA[
+   select 
+   		qna_num,qna_content,qna_data,mb_id,pd_idx,qna_re_ref,qna_re_lev,qna_re_seq
+   from 
+   		product_qna  
+   where pd_idx=#{pd_idx} 
+   order by 
+   		qna_re_ref desc, qna_re_seq asc 
+   limit #{startPage}, #{numPerPage} 	 
+ ]]>
+    </select>
+    
+    
+        <select id="countData" resultType="int">
+    <![CDATA[ 
+ 	select 
+ 		count(qna_num) 
+ 	from 
+ 		product_qna 
+ 	where qna_num > 0
+ ]]>
+    </select>
+    
+    
+	<!--       상품문의 답글 쓰기               -->
+    
+    <select id="getBoardReplyInfo"  resultType="ProductQnaVO">
+    
+    SELECT 
+    	   qna_num
+         , qna_re_ref
+         , qna_re_lev
+         ,qna_re_seq
+    FROM product_qna 
+    
+    WHERE qna_num=#{qna_num}
+ 	</select>
+    
+
+    <update id="qnareplyupdate" parameterType="ProductQnaVO">
+   		update 
+   			product_qna  
+   		set 
+   			qna_re_seq=qna_re_seq+1
+		
+		where qna_re_ref=#{qna_re_ref} AND qna_re_seq > #{qna_re_seq}
+ 
+    </update>
+
+    <insert id="qnareplywrite" parameterType="ProductQnaVO">
+        	insert into
+    			product_qna(qna_content,qna_data,mb_id,pd_idx,qna_re_ref,qna_re_lev,qna_re_seq)
+    		values(
+    		
+    		#{qna_content}
+    		,now()
+    		,#{mb_id}
+    		,#{pd_idx}
+    		,#{qna_num}
+    		,#{qna_re_lev}+1
+    		,#{qna_re_seq}+1
+    		)
+ 	</insert>
+
+
+	<!-- 구매자 기준 상품qna 불러오기 -->
+	<!-- 적용 안될 때는 껏다켜기 -->
+	<!-- resultMap으로 해보기 -->
+	<resultMap type="ProductVO" id="productVO_ID">
+		<result column="pd_idx" property="pd_idx"/>
+	    <result column="pd_category" property="pd_category"/>
+	    <result column="pd_name" property="pd_name"/>
+	    <result column="pd_price" property="pd_price"/>
+	    <result column="pd_size" property="pd_size"/>
+	    <result column="pd_origin" property="pd_origin"/>
+	    <result column="pd_img_name_f" property="pd_img_name_f"/>
+	    <result column="pd_img_name_s" property="pd_img_name_s"/>
+	    <result column="pd_stock" property="pd_stock"/>
+	    <result column="member_mb_id" property="member_mb_id"/>
+	</resultMap>
+
+	<resultMap type="ProductQnaVO" id="productQnaVO_ID">
+	    <result column="qna_num" property="qna_num"/>
+	    <result column="qna_content" property="qna_content"/>
+	    <result column="qna_data" property="qna_data"/>
+	    <result column="mb_id" property="mb_id"/>
+	    <result column="pd_idx" property="pd_idx"/>
+	    
+	    <result column="qna_re_ref" property="qna_re_ref"/>
+	    <result column="qna_re_lev" property="qna_re_lev"/>
+	    <result column="qna_re_seq" property="qna_re_seq"/>	
+	    
+	    	<collection property="productVO" resultMap="productVO_ID"/>
+	</resultMap>
+	 
+	<!-- join하기 -->
+	<!-- resultMap에  id="productVO"값을 받아온다. -->
+	<select id="qnaListMemberCriteria" parameterType="hashmap" resultMap="productQnaVO_ID">
+	<![CDATA[
+        
+		SELECT
+			p.pd_idx,
+			p.pd_category,
+			p.pd_name,
+			p.pd_price,
+			p.pd_size,
+			p.pd_origin,
+			p.pd_img_name_f,
+			p.pd_img_name_s,
+			p.pd_stock,
+			p.member_mb_id,
+			
+			pq.qna_num,
+			pq.qna_content,
+			pq.qna_data,
+			pq.mb_id,
+			pq.pd_idx,
+			pq.qna_re_ref,
+			pq.qna_re_lev,
+			pq.qna_re_seq
+	
+		from
+			product p
+		JOIN
+			product_qna pq
+		ON	
+			p.pd_idx = pq.pd_idx
+		where 
+			pq.qna_num > 0 and pq.mb_id =  #{mb_id} 	
+		order by 
+   			pq.qna_re_ref desc, pq.qna_re_seq asc 
+   		limit 
+   			#{startPage}, #{numPerPage} 	 	
+	]]>	
+	</select>
+
+
+
+	<!-- qnaListMemberCountData -->
+	<select id="qnaListMemberCountData" resultType="int">
+		select count(qna_num) from product_qna where qna_num > 0 and mb_id = #{mb_id }
+	</select>
+ 	
+ 	
+    </mapper>

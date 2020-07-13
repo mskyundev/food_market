@@ -15,7 +15,7 @@ import com.team3.vo.ProductVO;
 @Repository
 public class ProductDAOImp implements ProductDAO {
 
-	private static final String namespace="com.team3.mapper.productmapper";
+	private static final String namespace="com.team3.mappers.ProductMapper";
 	
 	@Inject
 	private SqlSession sqlSession;

@@ -14,7 +14,7 @@ import com.team3.vo.ProductWishListVO;
 @Repository
 public class ProductWishListDAOImp implements ProductWishListDAO {
 
-	private static final String namespace="com.team3.mapper.productWishListmapper";
+	private static final String namespace="com.team3.mappers.productWishListMapper";
 	
 	@Inject
 	private SqlSession sqlSession;

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team3.mappers.productReviewMapper">
+
+	<insert id="reviewWrite">
+		insert into pd_review (pd_re_idx, pd_re_subject, pd_re_img_name , pd_re_star ,member_mb_id,product_pd_idx,order_od_idx)
+		values (#{pd_re_idx},#{pd_re_subject},#{pd_re_img_name},#{pd_re_star},#{member_mb_id},#{product_pd_idx},#{order_od_idx})
+	</insert>
+	
+	<!-- #{startPage}는 getStartPage()메소드를 호출하는 것과 같다. -->
+	<select id="reviewListCriteria" parameterType="hashmap" resultType="ProductReviewVO">
+	<![CDATA[
+		select 
+			*
+		from
+			pd_review
+		where pd_re_idx > 0 and product_pd_idx = #{product_pd_idx}
+		order by pd_re_idx desc, pd_re_date desc
+		limit #{startPage}, #{numPerPage} 	
+	]]>	
+	</select>
+	<!-- sellerListCountData -->
+	<select id="reviewListCountData" resultType="int">
+		select count(pd_re_idx) from pd_review where product_pd_idx = #{product_pd_idx }
+	</select>
+	
+	<!-- 상품 전체 갯수 세서 가장 큰 수 가져오기 -->
+	<select id="reviewCountData" resultType="int">
+		select ifnull(max(pd_re_idx),0) from pd_review
+	</select>
+	
+	
+	<select id="reviewStarAVG" resultType="double">
+	SELECT ifnull(AVG(pd_re_star),0) FROM pd_review 
+	GROUP BY product_pd_idx 
+	HAVING product_pd_idx = #{product_pd_idx }
+	</select>
+
+
+
+
+
+	<!-- 구매자 기준 리뷰 불러오기 -->
+	<!-- 적용 안될 때는 껏다켜기 -->
+	<!-- resultMap으로 해보기 -->
+	<resultMap type="ProductVO" id="productVO_ID">
+		<result column="pd_idx" property="pd_idx"/>
+	    <result column="pd_category" property="pd_category"/>
+	    <result column="pd_name" property="pd_name"/>
+	    <result column="pd_price" property="pd_price"/>
+	    <result column="pd_size" property="pd_size"/>
+	    <result column="pd_origin" property="pd_origin"/>
+	    <result column="pd_img_name_f" property="pd_img_name_f"/>
+	    <result column="pd_img_name_s" property="pd_img_name_s"/>
+	    <result column="pd_stock" property="pd_stock"/>
+	    <result column="member_mb_id" property="member_mb_id"/>
+	</resultMap>
+
+	<resultMap type="ProductReviewVO" id="pd_reviewVO_ID">
+	    <result column="pd_re_idx" property="pd_re_idx"/>
+	    <result column="pd_re_subject" property="pd_re_subject"/>
+	    <result column="pd_re_img_name" property="pd_re_img_name"/>
+	    <result column="pd_re_star" property="pd_re_star"/>
+	    <result column="pd_re_date" property="pd_re_date"/>
+	    
+	    <result column="member_mb_id" property="member_mb_id"/>
+	    <result column="product_pd_idx" property="product_pd_idx"/>
+	    <result column="order_od_idx" property="order_od_idx"/>	
+	    
+	    	<collection property="productVO" resultMap="productVO_ID"/>
+	</resultMap>
+	 
+	<!-- join하기 -->
+	<!-- resultMap에  id="productVO"값을 받아온다. -->
+	<select id="reviewListMemberCriteria" parameterType="hashmap" resultMap="pd_reviewVO_ID">
+	<![CDATA[
+		SELECT
+			p.pd_idx,
+			p.pd_category,
+			p.pd_name,
+			p.pd_price,
+			p.pd_size,
+			p.pd_origin,
+			p.pd_img_name_f,
+			p.pd_img_name_s,
+			p.pd_stock,
+			p.member_mb_id,
+			pr.pd_re_idx,
+			pr.pd_re_subject,
+			pr.pd_re_img_name,		
+			pr.pd_re_star,
+			pr.pd_re_date,
+			pr.member_mb_id	,
+			pr.product_pd_idx,
+			pr.order_od_idx
+		from
+			product p
+		JOIN
+			pd_review pr
+		ON	
+			p.pd_idx = pr.product_pd_idx
+		where 
+			pr.pd_re_idx > 0 and pr.member_mb_id = #{mb_id }
+		order by 
+			pr.product_pd_idx desc, pr.pd_re_date desc
+		limit 
+			#{startPage}, #{numPerPage} 	
+	]]>	
+	</select>
+	
+
+	<!-- reviewListMemberCountData -->
+	<select id="reviewListMemberCountData" resultType="int">
+		select count(pd_re_idx) from pd_review where member_mb_id = #{member_mb_id }
+	</select>
+	
+
+</mapper>

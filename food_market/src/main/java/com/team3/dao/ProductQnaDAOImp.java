@@ -13,6 +13,8 @@ import com.team3.vo.ProductQnaVO;
 
 @Repository
 public class ProductQnaDAOImp implements ProductQnaDAO {
+	
+	private static final String namespace="com.team3.mappers.ProductQnaMapper";
 
 	@Inject
 	private SqlSession sqlSession;

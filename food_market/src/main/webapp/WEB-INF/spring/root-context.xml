@@ -21,18 +21,15 @@
 			value="jdbc:mysql://localhost:3306/3team?useSSL=false&amp;serverTimezone=UTC"></property>
 		<property name="username" value="root"></property>
 		<property name="password" value="1234"></property>
-		<!-- <property name="url"
-			value="jdbc:mysql://localhost/itwillbs14?useSSL=false&amp;serverTimezone=UTC"></property>
-		<property name="username" value="itwillbs14"></property>
-		<property name="password" value="itwillbs8030909"></property> -->
 	</bean>
 
 	<!-- mapper경로 확인하세요!! -->
+	<!-- classpath는 src->main->resource -->
 	<bean id="sqlSessionFactory"
 		class="org.mybatis.spring.SqlSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"></property>
-		<property name="mapperLocations"
-			value="classpath:/com/team3/**/mapper/*.xml" />
+		<property name="configLocation" value="classpath:/mybatis-config.xml"/>
+        <property name="mapperLocations" value="classpath:mappers/**/*Mapper.xml"/>
 	</bean>
 
 	<bean id="sqlSession" name="sqlSession"

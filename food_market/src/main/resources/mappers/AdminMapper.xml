@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team3.mappers.AdminMapper">
+	<!-- 로그인/회원 check -->
+	<select id="loginAdmin" resultType="String" >
+		SELECT 
+			am_id 
+		FROM admin 
+		where am_id=#{am_id} and am_pw=#{am_pw}
+	</select>
+	
+	<!-- 방문자 정보 저장 -->
+	<select id="whereTodayVisit" resultType="String" >
+		SELECT
+			DATE
+		FROM visit
+		WHERE DATE(DATE) = DATE(NOW())
+	</select>
+	<insert id="todayVisit">
+		INSERT
+		INTO
+			visit
+		VALUES(SYSDATE(),0,0,0,0,0,0)
+	</insert>
+	<update id="chrTodayVisit">
+		UPDATE 
+			visit
+		SET visits = visits+1, chrome = chrome+1 
+		WHERE chrome = chrome;
+	</update>
+	<update id="edgTodayVisit">
+		UPDATE 
+			visit
+		SET visits = visits+1, edge = edge+1 
+		WHERE edge = edge;
+	</update>
+	<update id="expTodayVisit">
+		UPDATE 
+			visit
+		SET visits = visits+1, explorer = explorer+1 
+		WHERE explorer = explorer;
+	</update>
+	<update id="safTodayVisit">
+		UPDATE 
+			visit
+		SET visits = visits+1, safari = safari+1 
+		WHERE safari = safari;
+	</update>
+	<update id="etcTodayVisit">
+		UPDATE 
+			visit
+		SET visits = visits+1, etc = etc+1 
+		WHERE etc = etc;
+	</update>
+	
+	<!-- 방문자정보 통계 -->
+	<select id="visitCount" resultType="int">
+		SELECT
+			VISITS
+		FROM visit
+		WHERE DATE(DATE) = DATE(NOW())
+	</select>
+	<select id="chrome" resultType="int">
+		SELECT
+			CHROME
+		FROM visit
+		WHERE DATE(DATE) = DATE(NOW())
+	</select>
+	<select id="edge" resultType="int">
+		SELECT
+			EDGE
+		FROM visit
+		WHERE DATE(DATE) = DATE(NOW())
+	</select>
+	<select id="explorer" resultType="int">
+		SELECT
+			EXPLORER
+		FROM visit
+		WHERE DATE(DATE) = DATE(NOW())
+	</select>
+	<select id="safari" resultType="int">
+		SELECT
+			SAFARI
+		FROM visit
+		WHERE DATE(DATE) = DATE(NOW())
+	</select>
+	<select id="etc" resultType="int">
+		SELECT
+			ETC
+		FROM visit
+		WHERE DATE(DATE) = DATE(NOW())
+	</select>
+	
+<!-- =============== 회원/상품 전체 리스트 sql  =============== -->
+	
+	<!-- 전체 회원목록 -->
+	<select id="selectMember" parameterType="hashmap" resultType="MemberVO">
+        SELECT 
+       		MB_IDX, MB_ID, MB_PW, MB_NAME, MB_EMAIL, MB_MOBILE, MB_POSTCODE, MB_ADDRESS, MB_ADDRESS1, MB_BIRTH, MB_SELLER, MB_DATE, MB_RDATE 
+        FROM member
+        ORDER BY mb_idx DESC limit #{startPage}, #{numPerPage}
+    </select>
+    <!-- 전체 회원 수 -->
+	<select id="memberCount" resultType="int">
+		SELECT 
+			count(mb_idx)
+		FROM member
+	</select>
+    <!-- 판매자/구매자별 회원 목록 -->
+	<select id="sellerList" parameterType="hashmap" resultType="MemberVO">
+        SELECT 
+        	MB_IDX, MB_ID, MB_PW, MB_NAME, MB_EMAIL, MB_MOBILE, MB_POSTCODE, MB_ADDRESS, MB_ADDRESS1, MB_BIRTH, MB_SELLER, MB_DATE, MB_RDATE 
+        FROM member 
+        WHERE mb_seller=#{mb_seller} 
+        ORDER BY mb_idx DESC limit #{startPage}, #{numPerPage} 
+	</select>
+	<!-- 판매자/구매자별 회원 수 -->
+	<select id="sellerCount" parameterType="hashmap" resultType="int">
+		SELECT 
+			count(mb_idx) 
+		FROM member 
+		WHERE mb_seller = #{mb_seller}
+	</select>
+	<!-- 전체 상품 출력 -->
+	<select id="productList" parameterType="hashmap" resultType="ProductVO">
+		SELECT	
+			pd_category, pd_idx, pd_name, pd_price, pd_size, pd_origin, pd_date, member_mb_id 
+		FROM product 
+		ORDER BY pd_idx DESC limit #{startPage}, #{numPerPage}
+	</select>
+	<!-- 전체 상품 수 -->
+	<select id="productCount" resultType="int">
+		SELECT 
+			count(pd_idx) 
+		FROM product
+	</select>
+	<!-- 카테고리별 상품 출력 -->
+	<select id="categoryList" parameterType="hashmap" resultType="ProductVO">
+		SELECT 
+			pd_category, pd_idx, pd_name, pd_price, pd_size, pd_origin, pd_date, member_mb_id 
+		FROM product 
+		WHERE pd_category=#{pd_category} 
+		ORDER BY pd_idx DESC limit #{startPage}, #{numPerPage}
+	</select>
+	<!-- 카테고리별 상품 수 -->
+	<select id="categoryCount" parameterType="hashmap" resultType="int">
+		SELECT 
+			count(pd_idx) 
+		FROM product 
+		WHERE pd_category=#{pd_category}
+	</select>
+	
+<!-- =============== 판매자 관련 sql  =============== -->
+	
+	<!-- 판매자별 상품 출력 -->
+	<select id="sellList" parameterType="hashmap" resultType="ProductVO">
+		SELECT 
+			pd_category, pd_idx, pd_name, pd_price, pd_size, pd_origin, pd_date, member_mb_id 
+		FROM product
+		WHERE member_mb_id=#{mb_id} 
+		ORDER BY pd_idx DESC limit #{startPage}, #{numPerPage}
+	</select>
+	<!-- 판매자별 상품 수 -->
+	<select id="sellerProductCount" parameterType="hashmap" resultType="int">
+		SELECT 
+			ifnull(count(pd_idx),0) 
+		FROM product 
+		WHERE member_mb_id=#{mb_id}
+	</select>
+	<!-- 판매자+카테고리별 상품 출력 -->
+	<select id="sellerCategoryList" parameterType="hashmap" resultType="ProductVO">
+		SELECT 
+			pd_category, pd_idx, pd_name, pd_price, pd_size, pd_origin, pd_date, member_mb_id 
+		FROM product 
+		WHERE member_mb_id=#{mb_id} and pd_category=#{pd_category} 
+		ORDER BY pd_idx DESC limit #{startPage}, #{numPerPage}
+	</select>
+	<!-- 판매자+카테고리별 상품 수 -->
+	<select id="sellerCategoryCount" parameterType="hashmap" resultType="int">
+		SELECT 
+			ifnull(count(pd_idx),0) 
+		FROM product 
+		WHERE member_mb_id=#{mb_id} and pd_category=#{pd_category}
+	</select>
+	<!-- 판매자별 판매 내역 - mb_id -->
+	<select id="sellerOrderList" resultType="OrdersVO">
+		select p.pd_idx, p.pd_name, o.od_num, o.od_address, o.od_address1, o.od_name, o.mb_id, o.od_total, o.od_date, o.od_delivery
+		from product p, orders o
+		where p.pd_idx = o.pd_idx and p.member_mb_id = #{mb_id}
+		order by o.od_date desc
+		limit #{startPage}, #{numPerPage}
+	</select>
+	<select id="sellProductCount" parameterType="hashmap" resultType="int">
+		SELECT 
+			ifnull(count(pd_idx),0) 
+		FROM product 
+		WHERE member_mb_id=#{mb_id}
+	</select>
+	
+<!-- =============== 구매자 관련 sql  =============== -->
+	
+	<!-- 구매자별 구매내역 -->
+	<select id="orderList" parameterType="hashmap" resultType="OrdersVO">
+		select o.od_idx, o.od_num, od_address, od_address1, od_mobile, od_name, od_date, od_delivery, op.pd_idx, op.price, op.amount
+		from orders o, orders_pd op
+		where o.mb_id = #{mb_id} and o.od_num = op.od_num
+		limit #{startPage}, #{numPerPage}
+	</select>
+	<!-- 구매자별 주문 수 -->
+	<select id="customerOrderCount" parameterType="hashmap" resultType="int">
+		SELECT 
+			ifnull(count(od_idx),0)
+		FROM orders 
+		WHERE mb_id=#{mb_id}
+	</select>
+	<!-- 구매자 장바구니 목록 -->
+	<select id="cartList" parameterType="hashmap" resultType="CartVO">
+		select * from cart where mb_id=#{mb_id}
+	</select>
+	<!-- 구매자 장바구니 수 -->
+	<select id="cartCount" parameterType="hashmap" resultType="int">
+		select ifnull(count(cart_idx),0) from cart where mb_id=#{mb_id}
+	</select>
+	
+<!-- =============== 빅데이터 관련  =============== -->
+	
+	<!-- 신규 가입자 -->
+	<select id="todayMember" parameterType="hashmap" resultType="int">
+		SELECT
+			count(mb_idx) 
+		FROM member 
+		WHERE mb_date LIKE CONCAT('%',#{mb_date},'%')
+	</select>
+	<!-- 당일 판매량 -->
+	<select id="todayOrder" parameterType="hashmap" resultType="int">
+		SELECT 
+			count(od_idx) 
+		FROM orders 
+		WHERE od_date LIKE CONCAT('%',#{mb_date},'%')
+	</select>
+	<!-- 당일 판매금액 -->
+	<select id="todaySales" parameterType="hashmap" resultType="String">
+		SELECT 
+			format(sum(od_total),0)
+		FROM orders 
+		WHERE od_date LIKE CONCAT('%',#{mb_date},'%')
+	</select>
+	<!-- 카테고리별 상품 수 -->
+	<select id="categoryProduct" resultType="int">
+		select ifnull(count(pd_idx),0) from product where pd_category=#{pd_category}
+	</select>
+	<!-- 최대 판매량 탑8 -->
+	<select id="mostSoldItem" resultType="ProductVO">
+		SELECT
+			pd_idx
+		FROM orders_pd
+		WHERE odpd_date > date_add(now(),interval -1 month)
+		GROUP BY pd_idx
+		ORDER BY SUM(amount) DESC LIMIT 8
+	</select> 
+	<!-- 탑8 정보 불러오기 -->
+	<select id="popularItem" parameterType="hashmap" resultType="ProductVO">
+		SELECT
+			*
+		FROM product
+		WHERE pd_idx IN(#{pd_idx0},#{pd_idx1},#{pd_idx2},#{pd_idx3},#{pd_idx4},#{pd_idx5},#{pd_idx6},#{pd_idx7})
+	</select>
+	<!-- 달별 max od_idx -->
+	<select id="pdOrderList" resultType="OrdersVO">
+		select od_idx from orders where od_date like CONCAT('%',#{thisMonth},'%')
+	</select>
+	<!-- pd_idx로 카테고리 출력 -->
+	<select id="productPd_category" resultType="OrdersVO">
+		select p.pd_category, op.amount, op.price
+		from product p, orders o, orders_pd op
+		where o.od_date like CONCAT('%',#{od_date},'%') and o.od_idx=#{od_idx} and o.pd_idx=p.pd_idx and o.od_num=op.od_num
+	</select>
+	<!-- 1달 방문자 추이 -->
+	<select id="monthVisit" resultType="OrdersVO">
+		SELECT
+			*
+		FROM visit
+		WHERE date 
+		BETWEEN DATE_ADD(CURDATE(), INTERVAL -30 DAY)
+		AND DATE_ADD(CURDATE(), INTERVAL -1 DAY) 	
+	</select>
+	
+<!-- ====================== 추천상품 ====================== -->
+	
+	<!-- 1. od_num별 pd_idx 출력 -->
+	<select id="selectOd_pd_idx" resultType="OrdersVO">
+		select pd_idx
+		from orders
+		where od_num=#{od_num}
+		order by pd_idx asc;
+	</select>
+	<!-- 2. select recommand score : 기존에 입력되어있는 데이터가 있는지 확인 -->
+	<select id="selectScore" resultType="int">
+		select ifnull (max(re_score),0)
+		from recommand
+		where re_pd_idx = #{re_pd_idx} and re_pd_idx2 = #{re_pd_idx2}
+	</select>
+	<!-- 3-1. insert recommand : 기존의 데이터가 없으면 insert -->
+	<insert id="insertRecommand">
+		insert into recommand(re_pd_idx,re_pd_idx2,re_score)
+		values(#{re_pd_idx},#{re_pd_idx2},1)
+	</insert>
+	<!-- 3-2. update recommand score : 기존의 데이터가 있으면 update score+1 -->
+	<update id="updateScore">
+		update recommand 
+		set re_score=#{re_score}
+		where re_pd_idx = #{re_pd_idx} and re_pd_idx2 = #{re_pd_idx2} 
+	</update>
+	<!-- 최근 구매 상품 -->
+	<select id="orderListMb_id" resultType="int">
+		select ifnull(max(pd_idx),0)
+		from orders
+		where od_idx = (select max(od_idx)
+						from orders
+						where mb_id=#{mb_id})
+		order by pd_idx;
+	</select>
+	<!-- 최근 구매 상품과 관련된 추천 상품 리스트 -->
+	<select id="re_pd_idxList" resultType="RecommandVO">
+		select re_pd_idx,re_pd_idx2,re_score
+		from recommand
+		where re_pd_idx = #{pd_idx} or re_pd_idx2 = #{pd_idx}
+		order by re_score desc
+		limit 4
+	</select>
+	
+</mapper>

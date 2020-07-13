@@ -5,24 +5,32 @@
 <configuration>
 
 	<typeAliases>
-		<typeAlias type="com.accounting.vo.AdminVO" alias="AdminVO"/>
-		<typeAlias type="com.accounting.vo.AskVO" alias="AskVO"/>
-		<typeAlias type="com.accounting.vo.CartVO" alias="CartVO"/>
-		<typeAlias type="com.accounting.vo.CsFileVO" alias="CsFileVO"/>
-		<typeAlias type="com.accounting.vo.CsVO" alias="CsVO"/>
-		<typeAlias type="com.accounting.vo.MemberVO" alias="MemberVO"/>
-		<typeAlias type="com.accounting.vo.OrdersVO" alias="OrdersVO"/>
-		<typeAlias type="com.accounting.vo.PreOrderVO" alias="PreOrderVO"/>
-		<typeAlias type="com.accounting.vo.ProductQnaVO" alias="ProductQnaVO"/>
-		<typeAlias type="com.accounting.vo.ProductReviewVO" alias="ProductReviewVO"/>
-		<typeAlias type="com.accounting.vo.ProductVO" alias="ProductVO"/>
-		<typeAlias type="com.accounting.vo.ProductWishListVO" alias="ProductWishListVO"/>
-		<typeAlias type="com.accounting.vo.RecommandVO" alias="RecommandVO"/>
+		<typeAlias type="com.team3.vo.AdminVO" alias="AdminVO"/>
+		<typeAlias type="com.team3.vo.AskVO" alias="AskVO"/>
+		<typeAlias type="com.team3.vo.CartVO" alias="CartVO"/>
+		<typeAlias type="com.team3.vo.CsFileVO" alias="CsFileVO"/>
+		<typeAlias type="com.team3.vo.CsVO" alias="CsVO"/>
+		<typeAlias type="com.team3.vo.MemberVO" alias="MemberVO"/>
+		<typeAlias type="com.team3.vo.OrdersVO" alias="OrdersVO"/>
+		<typeAlias type="com.team3.vo.PreOrdersVO" alias="PreOrdersVO"/>
+		<typeAlias type="com.team3.vo.ProductQnaVO" alias="ProductQnaVO"/>
+		<typeAlias type="com.team3.vo.ProductReviewVO" alias="ProductReviewVO"/>
+		<typeAlias type="com.team3.vo.ProductVO" alias="ProductVO"/>
+		<typeAlias type="com.team3.vo.ProductWishListVO" alias="ProductWishListVO"/>
+		<typeAlias type="com.team3.vo.RecommandVO" alias="RecommandVO"/>
 	</typeAliases>
 	
 	<!-- MyBatis mapper 파일이 추가될 때마다 지정해줘야 . -->
-    <mappers>
-    	
-    </mappers>
+    <!-- <mappers>
+    	<mapper resource="com/team3/mappers/AdminMapper.xml"/>
+    	<mapper resource="com/team3/mappers/CartMapper.xml"/>
+    	<mapper resource="com/team3/mappers/CsMapper.xml"/>
+    	<mapper resource="com/team3/mappers/MemberMapper.xml"/>
+    	<mapper resource="com/team3/mappers/OrdersMapper.xml"/>
+    	<mapper resource="com/team3/mappers/ProductMapper.xml"/>
+    	<mapper resource="com/team3/mappers/ProductQnaMapper.xml"/>
+    	<mapper resource="com/team3/mappers/ProductReviewMapper.xml"/>
+    	<mapper resource="com/team3/mappers/ProductWishListMapper.xml"/>
+    </mappers> -->
 
 </configuration>

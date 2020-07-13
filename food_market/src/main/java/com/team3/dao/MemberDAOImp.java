@@ -14,7 +14,7 @@ public class MemberDAOImp implements MemberDAO {
 	@Inject
 	private SqlSession sqlSession;
 	
-	private static final String Namespace = "com.team3.mapper.MemberMapper";
+	private static final String Namespace = "com.team3.mappers.MemberMapper";
 	
 
 	public MemberDAOImp() {

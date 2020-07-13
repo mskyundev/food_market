@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team3.mappers.CsMapper">
+	
+ 	<!-- 자주 묻는 질문 -->
+ 	<!-- 글 목록 가져오기 -->
+ 	<select id="selectAsk" resultType="AskVO">
+ 		select 
+ 			ask_type, ask_subject, ask_content 
+ 		from ask 
+ 		order by ask_idx desc limit #{pageStart}, #{perPageNum}
+ 	</select>
+ 	
+ 	<!-- 게시글 수 카운트 -->
+ 	<select id="countAsk" resultType="int">
+ 		select 
+ 			count(*) 
+ 		from ask
+ 	</select>
+ 	
+ 	<!-- 검색 키워드로 조회 -->
+ 	<select id="searchAsk" resultType="AskVO">
+ 		select 
+ 			ask_type, ask_subject, ask_content 
+ 		from ask where ask_subject like concat('%',#{keyword},'%') 
+ 		order by ask_idx desc limit #{pageStart}, #{perPageNum}
+ 	</select>
+ 	
+ 	<!-- 카테고리별로 조회 -->
+ 	<select id="findAsk" resultType="AskVO">
+ 		select 
+ 			ask_type, ask_subject, ask_content
+ 		from ask where ask_type=#{type}
+ 		order by ask_idx desc limit #{pageStart}, #{perPageNum}
+ 	</select>
+ 	
+ 	<!-- 검색 글 수 카운트 -->
+ 	<select id="countSearchAsk" resultType="int">
+ 		select 
+ 			count(*) 
+ 		from ask 
+ 		where ask_subject like concat('%',#{keyword},'%')
+ 	</select>
+ 	
+ 	<!-- 카테고리별 카운트 -->
+ 	<select id="countFindAsk" resultType="int">
+ 		select 
+ 			count(*) 
+ 		from ask
+ 		where ask_type=#{type}
+ 	</select>
+ 	
+ 	<!-- CS 게시판 -->
+ 	<!-- 글쓰기 -->
+ 	<insert id="insertCS" parameterType="CsVO">
+ 		insert into cs_board(cs_type, cs_subject, cs_content, cs_file, cs_date, cs_re_ref, cs_re_lev, cs_re_seq, order_od_idx, member_mb_id, pd_idx, od_num) values(#{cs_type}, #{cs_subject}, #{cs_content}, #{cs_file} ,SYSDATE(), #{cs_re_ref}, 0, 0, 1, #{member_mb_id}, #{pd_idx}, #{od_num})
+ 	</insert>
+ 	
+ 	<!-- CS 게시판 파일 업로드 정보 DB 저장 -->
+ 	<insert id="insertCsFile" parameterType="CsFileVO" >
+ 		insert into cs_file(board_idx, org_filename, str_filename, file_size, file_date, crea_id) values(#{board_idx}, #{org_filename}, #{str_filename}, #{file_size}, SYSDATE(), 'admin')
+ 	</insert>
+ 	
+ 	<!-- CS 게시글 번호에 해당하는 첨부파일 목록 조회 -->
+ 	<select id="selectFileList" resultType="hashmap">
+ 		select idx, org_filename, round(file_size/1024, 1) as file_size from cs_file where board_idx=#{cs_idx} and del_gb = 'N'
+ 	</select>
+ 	
+ 	<!-- CS 게시글에서 파일 다운로드시 파일 정보 조회 -->
+ 	<select id="selectFileInfo" resultType="hashmap">
+ 		select org_filename, str_filename from cs_file where idx=#{idx}
+ 	</select>
+ 	
+ 	<!-- 글번호 최대값 구하기 -->
+ 	<select id="maxCount" resultType="int">
+ 		select ifnull(max(cs_idx),0) from cs_board
+ 	</select>
+ 	
+ 	<!-- 목록 보기 -->
+ 	<select id="selectCS" parameterType="hashmap" resultType="CsVO">
+ 		select cs_idx, cs_type, cs_subject, member_mb_id, cs_date from cs_board where member_mb_id=#{member_mb_id} order by cs_re_ref desc, cs_re_seq asc limit #{pageStart}, #{perPageNum}
+ 	</select>
+ 	
+ 	<!-- 게시글 수 카운트 -->
+ 	<select id="countCS" resultType="int">
+ 		select ifnull(count(*),0) from cs_board
+ 	</select>
+ 	
+ 	
+ 	<!-- 게시물 보기 -->
+ 	<select id="readCS" resultType="CsVO">
+ 		select * from cs_board where cs_idx = #{cs_idx}
+ 	</select>
+ 	
+ 	<!-- 게시물 수정 -->
+ 	<update id="updateCS" parameterType="CsVO">
+ 		update cs_board set cs_type=#{cs_type}, cs_subject=#{cs_subject}, cs_content=#{cs_content} where cs_idx=#{cs_idx}
+ 	</update>
+    
+    <!-- 게시물 삭제 -->
+    <delete id="deleteCS" parameterType="CsVO">
+    	delete from cs_board where cs_idx=#{cs_idx}
+    </delete>
+    
+    <!-- 답글 쓰기 -->
+    <insert id="replyCS" parameterType="CsVO">
+ 		insert into cs_board(cs_type, cs_subject, cs_content, cs_date, cs_re_ref, cs_re_lev, cs_re_seq, order_od_idx, member_mb_id) values(#{cs_type}, #{cs_subject}, #{cs_content}, SYSDATE(), #{cs_re_ref}, 1, 1, 1, #{member_mb_id})
+ 	</insert>
+ 	
+ 	
+ 	<!-- ============================ admin 사용  ============================ -->
+ 	
+ 	<!-- 전체 목록 보기 -->
+ 	<select id="csList" parameterType="hashmap" resultType="CsVO">
+ 		select *
+ 		from cs_board
+ 		order by cs_re_ref desc, cs_re_seq asc limit #{pageStart}, #{perPageNum}
+ 	</select>
+ 	<!-- 전체 목록 수 -->
+ 	<select id="csCount" parameterType="hashmap" resultType="int">
+ 		select ifnull(count(cs_type),0)
+ 		from cs_board
+ 	</select>
+ 	<!-- 문의 타입별 리스트 -->
+ 	<select id="cs_typeList" parameterType="hashmap" resultType="CsVO">
+ 		select *
+ 		from cs_board
+ 		where cs_type = #{cs_type}
+ 		order by cs_re_ref desc, cs_re_seq asc limit #{pageStart}, #{perPageNum}
+ 	</select>
+ 	<!-- 문의 타입별 목록 수 -->
+ 	<select id="cs_typeCount" parameterType="hashmap" resultType="int">
+ 		select ifnull(count(cs_type),0)
+ 		from cs_board
+ 		where cs_type = #{cs_type}
+ 	</select>
+ 	
+ 	
+ 	<!-- ============================ admin 사용  ============================ -->
+ 	
+</mapper>

@@ -15,7 +15,7 @@ import com.team3.vo.CartVO;
 public class CartDAOImp implements CartDAO {
 	@Inject
 	SqlSession sqlSession;
-	private static final String Namespace = "com.team3.mapper.cartMapper";
+	private static final String Namespace = "com.team3.mappers.CartMapper";
 	
 	//장바구니 신규 추가
 	@Override

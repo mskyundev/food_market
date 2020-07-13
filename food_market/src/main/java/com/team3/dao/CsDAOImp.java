@@ -18,7 +18,7 @@ public class CsDAOImp implements CsDAO {
 	@Inject
 	private SqlSession sqlSession;
 	
-	private static final String Namespace = "com.team3.mapper.csMapper";
+	private static final String Namespace = "com.team3.mappers.CsMapper";
 	
 	@Override
 	public List<AskVO> selectAsk(Map<String, Object> map) throws Exception {		

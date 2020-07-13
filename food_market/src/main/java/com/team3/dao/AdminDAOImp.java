@@ -20,7 +20,7 @@ public class AdminDAOImp implements AdminDAO {
 	@Inject
 	private SqlSession sqlSession;
 	
-	private static final String Namespace="com.team3.mapper.adminMapper";
+	private static final String Namespace="com.team3.mappers.AdminMapper";
 	
 	// 관리자 로그인
 	@Override

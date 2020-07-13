@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team3.mappers.MemberMapper">
+
+	<!-- 회원가입 -->
+	<insert id="insertMember" parameterType="MemberVO">
+	 INSERT 
+	 INTO member(
+	 	mb_id,mb_pw,mb_name,mb_email,mb_mobile,mb_postcode,mb_address,mb_address1,mb_birth,mb_seller,mb_date)
+	 VALUES(
+	 	#{mb_id},#{mb_pw},#{mb_name},#{mb_email},#{mb_mobile},#{mb_postcode},#{mb_address},#{mb_address1},#{mb_birth},#{mb_seller},SYSDATE())
+	</insert>
+	<!-- 아이디 중복 체크 -->
+	<select id="emailCheck" resultType="String">
+		SELECT 
+			mb_email
+		FROM member 
+		WHERE mb_email=#{mb_email}
+	</select>
+	<!-- 아이디 중복 체크 -->
+	<select id="idCheck" resultType="String">
+		SELECT 
+			mb_id 
+		FROM member 
+		WHERE mb_id=#{mb_id}
+	</select>
+	<select id="findCheck" resultType="MemberVO">
+		SELECT 
+			mb_email 
+		FROM member 
+		WHERE mb_id=#{mb_id}
+	</select>
+	
+	<!-- 로그인/회원 check -->
+	<select id="loginMember" resultType="String" >
+		SELECT 
+			mb_name 
+		FROM member 
+		WHERE mb_id=#{mb_id} and mb_pw=#{mb_pw}
+	</select>
+	
+ 	<!-- 회원목록 -->
+	 <select id="selectMember" resultType="MemberVO">
+        SELECT 
+        	MB_IDX, MB_ID, MB_PW, MB_NAME, MB_EMAIL, MB_MOBILE, MB_POSTCODE, MB_ADDRESS, MB_ADDRESS1, MB_BIRTH, MB_SELLER, MB_DATE, MB_RDATE  
+        FROM member
+    </select>
+    	
+	<!-- 회원 정보 -->
+	<select id="memberInfo" resultType="MemberVO" >
+		SELECT
+			MB_ID, MB_PW, MB_NAME, MB_EMAIL, MB_MOBILE, MB_POSTCODE, MB_ADDRESS, MB_ADDRESS1, MB_BIRTH, MB_SELLER 
+		FROM member 
+		WHERE mb_id=#{mb_id}
+	</select>
+	
+	<!-- 비밀번호 변경 -->
+	<update id="memberModifyPw" parameterType="MemberVO">
+		UPDATE 
+			member 
+		SET mb_pw=#{mb_pw2}, mb_rdate=SYSDATE() 
+		WHERE mb_id=#{mb_id} and mb_pw=#{mb_pw}
+	</update>
+	
+	<!-- 회원 정보 수정 -->
+	<update id="memberModify" parameterType="MemberVO">
+		UPDATE 
+			member 
+		SET mb_email=#{mb_email}, mb_mobile=#{mb_mobile}, mb_postcode=#{mb_postcode}, mb_address=#{mb_address}, mb_address1=#{mb_address1}, mb_rdate=SYSDATE() 
+		WHERE mb_id=#{mb_id}
+	</update>
+	
+	<!-- 회원 탈퇴 -->
+	<delete id="memberDelete" parameterType="MemberVO">
+		DELETE 
+		FROM member 
+		WHERE mb_id=#{mb_id} and mb_pw=#{mb_pw}
+	</delete>
+	
+	<!-- 비밀번호 찾기 -->
+	<update id="changePw" parameterType="MemberVO">
+		UPDATE 
+			member 
+		SET mb_pw=#{mb_pw2}, mb_rdate=SYSDATE() 
+		WHERE mb_id=#{mb_id}
+	</update>
+	<!-- 관리자 아이디 체크 -->
+	<select id="adminId" resultType="String" >
+		SELECT 
+			am_id 
+		FROM admin 
+		WHERE am_id=#{mb_id}
+	</select>
+	
+	
+
+
+</mapper>

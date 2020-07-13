@@ -15,7 +15,7 @@ public class ProductVO {
 	private Date pd_date;
 	private String member_mb_id; // member 외래키
 
-	//pd_wishlistVO 객체
+	//ProductWishListVO 객체
 	private ProductWishListVO ProductWishListVO;
 	public ProductWishListVO getPd_wishlistVO() {
 		return ProductWishListVO;

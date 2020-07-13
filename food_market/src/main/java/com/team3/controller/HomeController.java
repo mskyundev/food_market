@@ -51,8 +51,8 @@ public class HomeController{
 		
 		String formattedDate = dateFormat.format(date);
 		String se_id=(String) session.getAttribute("mb_id");
-		
 		int pd_idx = adminService.orderListMb_id(se_id); // 최근 구매 상품
+		
 		if (pd_idx != 0) {
 			
 			// 최근 구매 상품과 관련된 추천 상품 리스트

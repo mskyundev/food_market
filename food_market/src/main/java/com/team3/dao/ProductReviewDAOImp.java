@@ -14,7 +14,7 @@ import com.team3.vo.ProductReviewVO;
 public class ProductReviewDAOImp implements ProductReviewDAO {
 
 
-	private static final String namespace="com.team3.mapper.productReviewmapper";
+	private static final String namespace="com.team3.mappers.productReviewMapper";
 	
 	@Inject
 	private SqlSession sqlSession;

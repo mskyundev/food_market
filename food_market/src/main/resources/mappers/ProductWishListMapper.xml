@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.team3.mappers.ProductWishListMapper">
+	<!-- 상품 상세 페이지에 출력하기  -->
+	<!-- 상품번호 기준 list갯수 -->
+	<select id="wishListProductCountData" resultType="int">
+		select count(pd_wish_idx) from pd_wishlist where product_pd_idx = #{product_pd_idx }
+	</select>
+	
+	
+	<!-- 1번 -->
+	<!-- WishList에 존재하는지 확인 -->
+	<!-- 0일 때만 insert -->
+	<select id="wishListSelect" resultType="int">
+		select count(pd_wish_idx) from pd_wishlist WHERE product_pd_idx = #{product_pd_idx} and member_mb_id = #{member_mb_id}
+	</select>
+	
+	
+	<!-- 2번 -->
+	<!-- 테이블 전체 갯수 세서 가장 큰 수 가져오기 -->
+	<select id="wishListCountData" resultType="int">
+		select ifnull(max(pd_wish_idx),0) from pd_wishlist
+	</select>
+	
+	
+	<!-- 3번 -->
+	<!-- 위시리스트 넣기 -->
+	<insert id="wishListWrite">
+		insert into pd_wishlist (pd_wish_idx, member_mb_id, product_pd_idx)
+		values (#{pd_wish_idx},#{member_mb_id},#{product_pd_idx})
+	</insert>
+	
+
+
+	<!-- 한 번 더 눌렀을 때  -->
+	<!-- 1번 -->
+	<!-- WishList에 존재하는지 확인 -->
+	<!-- 1일 때만 delete -->
+	<!-- 삭제  -->
+	<delete id="wishListDelete">
+		DELETE 
+		FROM pd_wishlist 
+		WHERE product_pd_idx = #{product_pd_idx} and member_mb_id = #{member_mb_id}
+	</delete>
+	
+
+
+
+
+	
+	<!-- 구매자 기준 list갯수 -->
+	<select id="wishListMemberCountData" resultType="int">
+		select count(pd_wish_idx) from pd_wishlist where member_mb_id = #{mb_id }
+	</select>
+	
+	
+	
+	<!-- 적용 안될 때는 껏다켜기 -->
+	<!-- resultMap으로 해보기 -->
+	<!-- property="pd_wishlistVO"는  productVO.java에 작성되어있는 private 객체 -->
+	<resultMap type="ProductVO" id="productVO_ID">
+		<result column="pd_idx" property="pd_idx"/>
+	    <result column="pd_category" property="pd_category"/>
+	    <result column="pd_name" property="pd_name"/>
+	    <result column="pd_price" property="pd_price"/>
+	    <result column="pd_size" property="pd_size"/>
+	    <result column="pd_origin" property="pd_origin"/>
+	    <result column="pd_img_name_f" property="pd_img_name_f"/>
+	    <result column="pd_img_name_s" property="pd_img_name_s"/>
+	    <result column="pd_stock" property="pd_stock"/>
+	    	
+	    	<collection property="ProductWishListVO" resultMap="pd_wishlistVO_ID"/>
+	</resultMap>
+
+	<resultMap type="ProductWishListVO" id="pd_wishlistVO_ID">
+	    <result column="pd_wish_idx" property="pd_wish_idx"/>
+	    <result column="member_mb_id" property="member_mb_id"/>
+	    <result column="product_pd_idx" property="product_pd_idx"/>
+	    <result column="pd_wish_date" property="pd_wish_date"/>
+	</resultMap>
+	 
+	<!-- join하기 -->
+	<!-- resultMap에  id="productVO"값을 받아온다. -->
+	<select id="wishListMember" parameterType="hashmap" resultMap="productVO_ID">
+	<![CDATA[
+		SELECT
+			p.pd_idx,
+			p.pd_category,
+			p.pd_name,
+			p.pd_price,
+			p.pd_size,
+			p.pd_origin,
+			p.pd_img_name_f,
+			p.pd_img_name_s,
+			p.pd_stock,
+			pw.pd_wish_idx,
+			pw.product_pd_idx,
+			pw.member_mb_id,
+			pw.pd_wish_date			
+		from
+			product p
+		JOIN
+			pd_wishlist pw
+		ON	
+			p.pd_idx = pw.product_pd_idx
+		where pw.pd_wish_idx > 0 and pw.member_mb_id = #{mb_id }
+		order by product_pd_idx desc, pd_wish_date desc
+		limit #{startPage}, #{numPerPage} 	
+	]]>	
+	</select>
+	
+	
+</mapper>

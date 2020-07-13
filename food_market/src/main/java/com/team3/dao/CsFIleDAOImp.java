@@ -14,7 +14,7 @@ public class CsFIleDAOImp implements CsFileDAO {
 	@Inject
 	private SqlSession sqlSession;
 	
-	private static final String Namespace = "com.team3.mapper.csMapper";
+	private static final String Namespace = "com.team3.mappers.CsMapper";
 	
 	@Override
 	public Map<String, Object> selectFileInfo(int idx) {
