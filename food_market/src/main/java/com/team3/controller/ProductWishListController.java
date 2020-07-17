@@ -136,7 +136,7 @@ public class ProductWishListController {
 		//wishList를 불러와서 
 		//list의 pd_idx기준으로 상세 정보 불러오기 
 		
-		Map map = new HashMap();
+		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("mb_id",mb_id);
 		map.put("startPage", pCri.getStartPage());
 		map.put("numPerPage", pCri.getNumPerPage());

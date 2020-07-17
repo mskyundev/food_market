@@ -32,22 +32,19 @@ public class MemberController {
 
 	@Inject
 	private MemberService memberService;
-	
 	@Inject
 	private AdminService AdminSerivce;
-	
 	@Inject
 	private OrdersService OrdersService;
-	
 	@Inject
 	private CartService CartService;
 	
 	// 0-1. 회원가입 약관
-		@RequestMapping(value="/member/contract")
-		public String contract() {
-			
-			return "/member/contract";
-		}
+	@RequestMapping(value="/member/contract")
+	public String contract() {
+		
+		return "/member/contract";
+	}
 	
 	// 0-2. 회원가입 판매자/구매자 선택
 	@RequestMapping(value="/member/preJoin")
@@ -90,13 +87,17 @@ public class MemberController {
 
 	// 2_1.회원 로그인 처리
 	@RequestMapping(value = "/member/login", method = RequestMethod.POST)
-	public String Login(MemberVO mVO, AdminVO aVO, HttpSession session, 
-			Model model, HttpServletRequest request, RedirectAttributes redirectAttributes) throws Exception {
+	public String Login(MemberVO mVO, AdminVO aVO, HttpSession session, Model model, HttpServletRequest request) throws Exception {
 		String page=null;
 		
 		aVO.setAm_id(mVO.getMb_id());
 		aVO.setAm_pw(mVO.getMb_pw());
 //		String referer = request.getHeader("Referer");
+//		request.getHeader("referer"); // 접속 경로
+//		request.getHeader("user-agent"); // 유저의 시스템 정보
+//		request.getHeader("host"); // 접속 ip
+//		request.getHeader("User-Agent"); // 브라우져 정보 가져오기
+//		request.getHeader("X-Forwarded-For") // 클라이언트 ip 주소 가져오기
 		 
 		boolean result = memberService.Login(mVO, session);
 		boolean resultAdmin = AdminSerivce.AdminLogin(aVO, session);
@@ -143,8 +144,8 @@ public class MemberController {
 			
 			boolean result=memberService.MemberCheck(mVO);
 			if (result) {
-				MemberVO mvo2 = memberService.MemberInfo(mVO);
-				model.addAttribute("memInfo", mvo2);
+				MemberVO memInfo = memberService.MemberInfo(mVO);
+				model.addAttribute("memInfo", memInfo);
 				model.addAttribute("seller",seller);
 				returnPage="member/modify";
 			}else {

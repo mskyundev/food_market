@@ -52,30 +52,26 @@ public class OrdersController {
 
 	//주문취소
 	@RequestMapping(value="orderCancel" , method = RequestMethod.POST)
-	public String orderCancel1(HttpSession session,
-			@RequestParam(value="chbox[]") List<Integer> chbox ,
-			@ModelAttribute OrdersVO odvo,Model model) throws ParseException {
+	public String orderCancel1(HttpSession session, @RequestParam(value="chbox[]") List<Integer> chbox, OrdersVO odVO, Model model) throws ParseException {
 
 		int pd_idx = 0;
 		
 			for(int i : chbox) {
 				pd_idx = i;
-				odvo.setPd_idx(pd_idx);
+				odVO.setPd_idx(pd_idx);
 				//주문취소된 상품 재고수량 추가
-				OrdersService.updateAdd_pd_amount(odvo);
+				OrdersService.updateAdd_pd_amount(odVO);
 				//주문취소된 회원정보 삭제
-				OrdersService.delete_order(odvo);
+				OrdersService.delete_order(odVO);
 				//주문취소된 상품정보 삭제
-				OrdersService.delete_order_pd(odvo);
+				OrdersService.delete_order_pd(odVO);
 			}
 			return "/orders/orderlist";
 	}
 	
 	//주문완료 정보 추가
 	@RequestMapping(value="orderinsert" , method = RequestMethod.POST)
-	public String orderinsert(HttpSession session ,
-			@RequestParam(value="chbox[]") List<Integer> chbox ,
-			@ModelAttribute OrdersVO odvo,Model model) throws ParseException {
+	public String orderinsert(HttpSession session, @RequestParam(value="chbox[]") List<Integer> chbox,  OrdersVO odVO,Model model) throws ParseException {
 		
 		//주문조회할 주문번호 생성
 		 Calendar cal = Calendar.getInstance();
@@ -90,10 +86,10 @@ public class OrdersController {
 		 //주문번호
 		 String od_num = ymd + "_" + subNum;
 		 
-		 odvo.setOd_num(od_num);
+		 odVO.setOd_num(od_num);
 		 
 		String mb_id = (String)session.getAttribute("mb_id");
-		odvo.setMb_id(mb_id);
+		odVO.setMb_id(mb_id);
 		int pd_idx = 0;
 		CartVO CartVO = new CartVO();
 		CartVO.setMb_id(mb_id);
@@ -106,22 +102,22 @@ public class OrdersController {
 			for(int i : chbox) {
 				pd_idx = i;
 				//주문 vo에 상품번호 값 넣기
-				odvo.setPd_idx(pd_idx);
+				odVO.setPd_idx(pd_idx);
 				//장바구니 vo에  상품번호 값 넣기
 				CartVO.setPd_idx(pd_idx);
 				//주문 정보 추가
-				OrdersService.insertorder(odvo);
+				OrdersService.insertorder(odVO);
 				//주문 상품정보 추가
-				OrdersService.insertorder_pd(odvo);
+				OrdersService.insertorder_pd(odVO);
 				//주문완료된 상품 장바구니 내역 삭제
 				OrdersService.deletecart(CartVO);
 				//주문완료된 상품 재고수량 차감
-				OrdersService.updateSub_pd_amount(odvo);
+				OrdersService.updateSub_pd_amount(odVO);
 			}
 			
 			// 추천상품 : recommand db에 담기
 			// 1. od_num별 pd_idx 출력
-			List<OrdersVO> pd_idxList = adminService.selectOd_pd_idx(odvo); 
+			List<OrdersVO> pd_idxList = adminService.selectOd_pd_idx(odVO); 
 			
 			RecommandVO rVO = new RecommandVO();
 			for (int i = 0; i < pd_idxList.size(); i++) {
@@ -155,7 +151,7 @@ public class OrdersController {
 	@RequestMapping(value="orderinsert" , method = RequestMethod.GET)
 	public String orderinsert1(HttpSession session ,
 			@RequestParam(value="chbox[]") List<Integer> chbox ,
-			@ModelAttribute OrdersVO odvo,Model model) throws ParseException {
+			@ModelAttribute OrdersVO odVO,Model model) throws ParseException {
 		
 		
 		 Calendar cal = Calendar.getInstance();
@@ -170,10 +166,10 @@ public class OrdersController {
 		 
 		 String od_num = ymd + "_" + subNum;
 		 
-		 odvo.setOd_num(od_num);
+		 odVO.setOd_num(od_num);
 		 
 		String mb_id = (String)session.getAttribute("mb_id");
-		odvo.setMb_id(mb_id);
+		odVO.setMb_id(mb_id);
 		int pd_idx = 0;
 //		int od_amount = 0;
 		CartVO cartdto = new CartVO();
@@ -181,29 +177,29 @@ public class OrdersController {
 		
 		PreOrdersVO prevo = new PreOrdersVO();
 		prevo.setMb_id(mb_id);
-		model.addAttribute("od_total" , odvo.getOd_total());
-		System.out.println("인설트겟 : " + odvo.getOd_total());
+		model.addAttribute("od_total" , odVO.getOd_total());
+		System.out.println("인설트겟 : " + odVO.getOd_total());
 		if(mb_id != null) {
 //			for(int i=0; i < chbox.size(); i ++) {
 //				pd_idx = chbox.get(i);
 //				System.out.println("chbox.get(i)" + chbox.get(i));
-//				odvo.setPd_idx(pd_idx);
+//				odVO.setPd_idx(pd_idx);
 //				od_amount = chbox1.get(i);
-//				odvo.setOd_amount(od_amount);
+//				odVO.setOd_amount(od_amount);
 //				
 //				cartdto.setPd_idx(pd_idx);
 //				
-//				OrdersService.insertorder(odvo);
+//				OrdersService.insertorder(odVO);
 //				OrdersService.deletecart(cartdto);
 //			}
 			for(int i : chbox) {
 				pd_idx = i;
-				odvo.setPd_idx(pd_idx);
+				odVO.setPd_idx(pd_idx);
 				
 				cartdto.setPd_idx(pd_idx);
 				
-				OrdersService.insertorder(odvo);
-				OrdersService.insertorder_pd(odvo);
+				OrdersService.insertorder(odVO);
+				OrdersService.insertorder_pd(odVO);
 				
 //				OrdersService.deletecart(cartdto);
 			}
@@ -219,16 +215,16 @@ public class OrdersController {
 
 	//완료주문 목록
 	@RequestMapping("/orderlist")
-	public String orderlist(HttpSession session , @ModelAttribute OrdersVO odvo, Model model) throws Exception {
+	public String orderlist(HttpSession session , @ModelAttribute OrdersVO odVO, Model model) throws Exception {
 		String returnPage ;
 		String se_id = (String) session.getAttribute("mb_id");
 		if (se_id == null) {
 			returnPage = "redirect:/";
 		}else {
 		String mb_id = se_id;
-		odvo.setMb_id(mb_id);
+		odVO.setMb_id(mb_id);
 
-		List<OrdersVO> odlist1 = OrdersService.listorder(odvo);
+		List<OrdersVO> odlist1 = OrdersService.listorder(odVO);
 		
 		returnPage="orders/orderlist";
 		model.addAttribute("odlist", odlist1);
@@ -244,18 +240,18 @@ public class OrdersController {
 	public void orderDetailList(HttpSession session ,
 			@RequestParam("od_num") String od_num,
 //			@RequestParam("od_delivery") String od_delivery,
-			@ModelAttribute OrdersVO odvo ,Model model) {
+			@ModelAttribute OrdersVO odVO ,Model model) {
 		String mb_id = (String)session.getAttribute("mb_id");
-		odvo.setMb_id(mb_id);
+		odVO.setMb_id(mb_id);
 
-		odvo.setOd_num(od_num);
-//		odvo.setOd_delivery(od_delivery);
+		odVO.setOd_num(od_num);
+//		odVO.setOd_delivery(od_delivery);
 		//주문번호 값
-		model.addAttribute("od_num" , odvo.getOd_num());
+		model.addAttribute("od_num" , odVO.getOd_num());
 		//배송상태 값
-		model.addAttribute("od_delivery" , odvo.getOd_delivery());
+		model.addAttribute("od_delivery" , odVO.getOd_delivery());
 		//완료주문 상세정보 조회
-		List<OrdersVO> detail = OrdersService.orderdetail(odvo);
+		List<OrdersVO> detail = OrdersService.orderdetail(odVO);
 		System.out.println("orderDetailList ~~  "+detail);
 		model.addAttribute("detail" , detail);
 	}
@@ -265,9 +261,7 @@ public class OrdersController {
 	
 	//임시 결제 추가
 	@RequestMapping(value="preinsert" , method= RequestMethod.POST)
-	public String insertpreorder(HttpSession session,
-			@RequestParam(value= "chbox[]") List<String> chArr , 
-			@ModelAttribute PreOrdersVO PreOrdersVO) throws Exception{
+	public String insertpreorder(HttpSession session, @RequestParam(value= "chbox[]") List<String> chArr, PreOrdersVO pOdVO) throws Exception{
 		
 		String mb_id = (String)session.getAttribute("mb_id");
 	
@@ -277,24 +271,23 @@ public class OrdersController {
 		
 		if(countpre == 0) {
 
-			PreOrdersVO.setMb_id(mb_id);
+			pOdVO.setMb_id(mb_id);
 			for(String i : chArr) {
 				cart_idx = Integer.parseInt(i);
 				//결제할 상품들 상품번호
-				PreOrdersVO.setCart_idx(cart_idx);
+				pOdVO.setCart_idx(cart_idx);
 				//임시 결제 추가
-				PreOrdersService.insertorder(PreOrdersVO);
+				PreOrdersService.insertorder(pOdVO);
 			}
-			System.out.println(PreOrdersVO);
 			return "redirect:/orders/prelist";
 		}else {
 			return "redirect:/cart/cart";
 		}
 	}
 	@RequestMapping("preorderDelete")
-	public String preDelete(HttpSession session , OrdersVO odvo) {
+	public String preDelete(HttpSession session , OrdersVO odVO) {
 		String mb_id = (String)session.getAttribute("mb_id");
-		odvo.setMb_id(mb_id);
+		odVO.setMb_id(mb_id);
 		
 		PreOrdersService.deletepre(mb_id);
 		
@@ -311,7 +304,7 @@ public class OrdersController {
 		
 		MemberVO membervo = ms.MemberInfo(mvo);
 
-		Map<String, Object> map = new HashMap();
+		Map<String, Object> map = new HashMap<String, Object>();
 //		int countpre = PreOrdersService.countpre(mb_id);
 		
 			if(mb_id != null) {
@@ -347,13 +340,13 @@ public class OrdersController {
 //	
 //	
 //	@RequestMapping("trans")
-//	public String trans(HttpSession session , @ModelAttribute OrdersVO odvo , 
+//	public String trans(HttpSession session , @ModelAttribute OrdersVO odVO , 
 //			Model model) {
 //		
 //		String mb_id = (String)session.getAttribute("mb_id");
-//		odvo.setMb_id(mb_id);
+//		odVO.setMb_id(mb_id);
 //		
-//		List<OrdersVO> odlist = OrdersService.listorder(odvo);
+//		List<OrdersVO> odlist = OrdersService.listorder(odVO);
 //		
 //		model.addAttribute("odlist", odlist);
 //		return "orders/trans";
@@ -361,15 +354,13 @@ public class OrdersController {
 		
 	//주문 결제 api 팝업창
 	@RequestMapping("/payment")
-	public String pay(Model model , @RequestParam (value="od_total") int od_total,
-			@RequestParam(value="od_pdname")String pd_name,
-			@ModelAttribute OrdersVO odvo) throws Exception {
-		odvo.setOd_total(od_total);
-		odvo.setPd_name(pd_name);
+	public String pay(Model model , @RequestParam (value="od_total") int od_total, @RequestParam(value="od_pdname")String pd_name, OrdersVO odVO) throws Exception {
+		odVO.setOd_total(od_total);
+		odVO.setPd_name(pd_name);
 		//주문할 총 합계 금액
-		model.addAttribute("num" , odvo.getOd_total());
+		model.addAttribute("num" , odVO.getOd_total());
 		//주문할 상품명
-		model.addAttribute("pd_name" , odvo.getPd_name());
+		model.addAttribute("pd_name" , odVO.getPd_name());
 		
 		return "/orders/payment";
 	}

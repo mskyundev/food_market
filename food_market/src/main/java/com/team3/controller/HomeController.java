@@ -42,10 +42,7 @@ public class HomeController{
 	
 	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String home(Locale locale, Model model,HttpSession session, 
-			HttpServletResponse response,HttpServletRequest request) throws Exception {
-		
-//		Cookie cookie = new Cookie("cookie", cookie);
+	public String home(Locale locale, Model model,HttpSession session, HttpServletResponse response,HttpServletRequest request) throws Exception {
 		Date date = new Date();
 		DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, locale);
 		
@@ -54,7 +51,6 @@ public class HomeController{
 		int pd_idx = adminService.orderListMb_id(se_id); // 최근 구매 상품
 		
 		if (pd_idx != 0) {
-			
 			// 최근 구매 상품과 관련된 추천 상품 리스트
 			List<RecommandVO> re_pd_idxList = adminService.re_pd_idxList(pd_idx);
 			ProductVO pVO = null;

@@ -1,12 +1,11 @@
 package com.team3.controller;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
@@ -17,10 +16,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.team3.fileUpload.FileUtils;
+import com.team3.fileUpload.FileVO;
 import com.team3.page.FindCriteria;
 import com.team3.page.PageCriteria;
 import com.team3.page.PagingMaker;
@@ -48,6 +47,7 @@ public class ProductController {
 	private ProductQnaService ProductQnaService;
 	
 	
+	
 	@RequestMapping(value="/productSellerList", method=RequestMethod.GET)
 	public void productSellerList(MemberVO mvo, PageCriteria pCri, Model model, HttpSession session) throws Exception{
 		logger.info("PageCriteria :  "+pCri.toString());
@@ -59,7 +59,7 @@ public class ProductController {
 		int seller=(Integer) session.getAttribute("mb_seller");
 		model.addAttribute("seller",seller);
 		
-		Map map = new HashMap();
+		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("mb_id",mb_id);
 		map.put("startPage", pCri.getStartPage());
 		map.put("numPerPage", pCri.getNumPerPage());
@@ -141,7 +141,7 @@ public class ProductController {
 			qvo.setMb_id(mb_id);
 			
 			
-			Map map = new HashMap();
+			Map<String,Object> map = new HashMap<String,Object>();
 			map.put("mb_id",mb_id);
 			map.put("startPage", pCri.getStartPage());
 			map.put("numPerPage", pCri.getNumPerPage());
@@ -214,7 +214,7 @@ public class ProductController {
 	
 	
 	
-	//상품 등록하기
+	//상품 등록하기 페이지 이동
 	@RequestMapping(value="/productWrite", method =RequestMethod.GET)
 	public void writeGET(Model model) throws Exception{
 		
@@ -222,90 +222,31 @@ public class ProductController {
 		logger.info("writeGET()");
 		
 	}
-	
+	//상품 등록하기 insert
 	@RequestMapping(value="/productWrite", method=RequestMethod.POST)
-	public String writePOST(ProductVO ProductVO, RedirectAttributes reAttr, MultipartHttpServletRequest mRequest) throws Exception{
+	public String writePOST(ProductVO ProductVO,FileVO fileVO,RedirectAttributes reAttr, HttpServletRequest request,FileUtils file) throws Exception{
 		
-		// @RequestParam("pd_category") String pd_category 
-		logger.info("writePOST() ȣ��..........");
 		//파일 업로드하기 
 		boolean isUpload = false;
 		
-		//!!!!!!경로 주의하기
-//		String uploadPath = "D:\\food_market_my\\food_market_my\\src\\main\\webapp\\resources\\pd_img_upload\\"; //본인 폴더경로
-		String uploadPath = mRequest.getSession().getServletContext().getRealPath("/resources/pd_img_upload/"+ProductVO.getPd_category()+"/"); //임시경로
-		System.out.println("파일 업로드 임시 경로 !!!!!     "+mRequest.getSession().getServletContext().getRealPath("/resources/pd_img_upload/"+ProductVO.getPd_category()+"/"));
-		//임시경로 : D:\workspace_Spring\.metadata\.plugins\org.eclipse.wst.server.core\tmp1\wtpwebapps\food_market_my\resources\pd_img_upload\
-	
-		//파일 이름이 들어있다.  
-		Iterator<String> iterator = mRequest.getFileNames();
-		while(iterator.hasNext()){
-			String uploadFileName = iterator.next();
+		String Path = "C:\\Users\\mskyu\\git\\food_market\\food_market\\src\\main\\webapp\\resources\\\\pd_img_upload\\"+ProductVO.getPd_category()+"/";
+		
+		List<FileVO> fileList = file.FileUpload(fileVO,request,Path);
+		for (int i = 0; i < fileList.size(); i++) {
+			if(ProductVO.getPd_img_name_f()==null) {
+				ProductVO.setPd_img_name_f(fileList.get(i).getStoredFileName());
+			}else if(ProductVO.getPd_img_name_s()==null){
+				ProductVO.setPd_img_name_s(fileList.get(i).getStoredFileName());
+			}
+			System.out.println("사진 0"+fileList.get(i).getStoredFileName());
 			
-			MultipartFile mFile = mRequest.getFile(uploadFileName);
-			String originFileName = mFile.getOriginalFilename();
-			String saveFileName = originFileName;
-			 
-			if(saveFileName != null && !saveFileName.equals("")){
-				
-				//파일 이름 중복될 때 시간을 이름에 추가해서 이름이 중복되지 않도록 만든다.
-				if(new File(uploadPath + saveFileName).exists()){
-					
-					//.기준으로 자르기 
-					int baseIndex = saveFileName.lastIndexOf('.');
-					//파일 이름 바꾸기
-					String newSaveFileName = saveFileName.substring(0,baseIndex)+"_"+System.currentTimeMillis();
-					//파일 형식
-					String newFormat = saveFileName.substring(baseIndex+1);
-					//새로운 이름 
-					saveFileName = newSaveFileName+"."+newFormat;
-					
-				}//if()
-				
-				try {
-					mFile.transferTo(new File(uploadPath+saveFileName));
-//					System.out.println("mFile"+mFile.getOriginalFilename());
-//					System.out.println("\n saveFileName : "+saveFileName);
-					
-					
-					if(ProductVO.getPd_img_name_f()==null) {
-						ProductVO.setPd_img_name_f(saveFileName);
-					}else if(ProductVO.getPd_img_name_s()==null){
-						ProductVO.setPd_img_name_s(saveFileName);
-					}
-					
-					
-					
-					//file이름을 file vo 객체에 넣고 
-					//vo.setFileName(saveFileName)
-					//dao.write(pd_num, vo)
-					//db에 넣기???
-				
-					isUpload = true;
-					
-//					pd_imgVO.setPd_img_name(saveFileName);
-//					if(saveFileName != null)
-//					pd_imgService.write(pd_imgVO); img_mapper 사용 안하고 product_mapper에 같이 insert하기 
-					//img_mapper 지우기 
-					
-					//파일 이름이 2개 
-					//파일을 처음 넣을 때 pd_img_name_f 에 넣기 -> setPd_img_name_f
-					//pd_img_name_f 이 null이 아닐 때 값이 있을 때 
-					//pd_img_name_s 에 set하기 
-					//pd_img_name_f 와 pd_img_name_s이 null이 아닐 때  값이 있을 때 
-					//pd_img_name_s2 에 set하기 
-					//if else if else
-					
-					
-				} catch (IllegalStateException e) {
-					e.printStackTrace();
-					isUpload = false;
-				} catch (IOException e2){
-					e2.printStackTrace();
-					isUpload = false;
-				}				
-			}//if()
-		}//while()
+		}
+		System.out.println("사진 1"+ProductVO.getPd_img_name_f());
+		System.out.println("사진 2"+ProductVO.getPd_img_name_s());
+		
+		if (ProductVO.getPd_img_name_f().length() > 0 && ProductVO.getPd_img_name_s().length() > 0) {
+			isUpload=true;
+		}
 		
 		if(isUpload){
 			
@@ -319,9 +260,6 @@ public class ProductController {
 		
 		return "redirect:/product/productSellerList";
 	}
-	//상품 등록하기
-	
-	
 	
 }
 

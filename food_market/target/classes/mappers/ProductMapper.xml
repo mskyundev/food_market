@@ -5,12 +5,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
 <mapper namespace="com.team3.mappers.ProductMapper">
 
-	<insert id="productinsert">
+	<insert id="insert">
 		INSERT 
-		INTO product(
-		pd_category, pd_idx, pd_name , pd_price , pd_size ,pd_origin, pd_stock, member_mb_id,pd_img_name_f,pd_img_name_s )
-		VALUES(
-		#{pd_category},#{pd_idx},#{pd_name},#{pd_price},#{pd_size},#{pd_origin},#{pd_stock },#{member_mb_id },#{pd_img_name_f},#{pd_img_name_s})
+		INTO product(pd_category, pd_idx, pd_name , pd_price , pd_size ,pd_origin, pd_stock, member_mb_id,pd_img_name_f,pd_img_name_s )
+		VALUES(#{pd_category},#{pd_idx},#{pd_name},#{pd_price},#{pd_size},#{pd_origin},#{pd_stock },#{member_mb_id },#{pd_img_name_f},#{pd_img_name_s})
 	</insert>
 	
 	<update id="hitUp">

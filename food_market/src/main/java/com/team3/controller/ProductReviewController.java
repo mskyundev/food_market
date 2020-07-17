@@ -51,7 +51,7 @@ public class ProductReviewController {
 			try {
 				logger.info("PageCriteria :  "+pCri.toString());
 				
-				Map map = new HashMap();
+				Map<String,Object> map = new HashMap<String,Object>();
 				map.put("product_pd_idx",pd_idx); //파라미터값으로 받아오기 //임의로 지정하였다.
 				map.put("startPage", pCri.getStartPage());
 				map.put("numPerPage", pCri.getNumPerPage());
@@ -189,7 +189,7 @@ public class ProductReviewController {
 		
 		logger.info("PageCriteria :  "+pCri.toString());
 		
-		Map map = new HashMap();
+		Map<String,Object> map = new HashMap<String,Object>();
 		map.put("product_pd_idx",22); //파라미터값으로 받아오기 //임의로 지정하였다.
 		map.put("startPage", pCri.getStartPage());
 		map.put("numPerPage", pCri.getNumPerPage());

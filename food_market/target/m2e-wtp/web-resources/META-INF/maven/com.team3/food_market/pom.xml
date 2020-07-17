@@ -176,7 +176,7 @@
 			<version>2.6.0</version>
 		</dependency>
 
-		<!-- 0601 추가 -->
+		<!-- 파일 업로드 -->
 		<dependency>
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>

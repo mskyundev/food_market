@@ -279,7 +279,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where o.od_date like CONCAT('%',#{od_date},'%') and o.od_idx=#{od_idx} and o.pd_idx=p.pd_idx and o.od_num=op.od_num
 	</select>
 	<!-- 1달 방문자 추이 -->
-	<select id="monthVisit" resultType="OrdersVO">
+	<select id="monthVisit" resultType="VisitVO">
 		SELECT
 			*
 		FROM visit

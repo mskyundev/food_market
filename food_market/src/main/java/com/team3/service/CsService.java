@@ -16,7 +16,7 @@ public interface CsService {
 	public int countSearchAsk(String keyword) throws Exception;
 	public List<AskVO> findAsk(Map<String, Object> map) throws Exception;
 	public int countFindAsk(int type) throws Exception;
-	public void writeCS(HttpServletRequest request, CsVO csVO, CsFileVO csFileVO) throws Exception;
+	public void writeCS(CsVO csVO) throws Exception;
 	public int maxCount() throws Exception;
 	public List<CsVO> selectCS(Map<String, Object> map) throws Exception;
 	public int countCS() throws Exception;

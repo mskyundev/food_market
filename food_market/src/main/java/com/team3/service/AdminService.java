@@ -11,6 +11,7 @@ import com.team3.vo.MemberVO;
 import com.team3.vo.OrdersVO;
 import com.team3.vo.ProductVO;
 import com.team3.vo.RecommandVO;
+import com.team3.vo.VisitVO;
 
 public interface AdminService {
 	public List<MemberVO> MemberList(Map<String, Object> map)throws Exception;
@@ -31,7 +32,7 @@ public interface AdminService {
 	public int safari() throws Exception;
 	public int etc() throws Exception;
 	// 방문자 통계(1달)
-	public List<AdminVO> monthVisit() throws Exception;
+	public List<VisitVO> monthVisit() throws Exception;
 	
 	// 인기상품(메인페이지)
 	public List<ProductVO> mostSoldItem() throws Exception;

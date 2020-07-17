@@ -55,19 +55,9 @@ public class CsServiceImp implements CsService {
 		return dao.countFindAsk(type);
 	}
 	
-//	@Override
-//	public void writeCS(HttpServletRequest request, CsVO csVO, CsFileVO csFileVO) throws Exception {
-//		dao.writeCS(csVO);	
-//		
-//		List<CsFileVO> list = fileUtils.parseInsertFileInfo(csFileVO, request);
-//		for(int i=0, size=list.size(); i<size; i++){
-//			dao.insertFile(list.get(i));
-//		}
-//	}
 	@Override
-	public void writeCS(HttpServletRequest request, CsVO csVO, CsFileVO csFileVO) throws Exception {
-		// TODO Auto-generated method stub
-		
+	public void writeCS(CsVO csVO) throws Exception {
+		dao.writeCS(csVO);
 	}
 
 	@Override

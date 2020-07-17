@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.team3.fileUpload.FileUtils;
 import com.team3.page.PageCriteria;
 import com.team3.page.PagingMaker;
 import com.team3.service.CsService;
@@ -77,13 +78,13 @@ public class CsController {
 	
 	// 문의 글쓰기 작업
 	@RequestMapping(value="/cs/write", method=RequestMethod.POST)
-	public String write(HttpServletRequest request, HttpSession session, CsVO csVO, CsFileVO csFileVO) throws Exception{
+	public String write(HttpServletRequest request, HttpSession session, CsVO csVO, CsFileVO csFileVO,FileUtils file) throws Exception{
 		
 		csVO.setMember_mb_id(session.getAttribute("mb_id").toString());
 		csVO.setCs_re_ref(service.maxCount()+1);
 		csFileVO.setBoard_idx(service.maxCount()+1);
 	
-		service.writeCS(request, csVO, csFileVO);
+		service.writeCS(csVO);
 		return "redirect:/cs/list";
 	}
 	

@@ -49,8 +49,8 @@
 		class="org.springframework.mail.javamail.JavaMailSenderImpl">
 		<property name="host" value="smtp.gmail.com" />
 		<property name="port" value="587" />
-		<property name="username" value="wtissue0926@gmail.com" />
-		<property name="password" value="iwlbnrmxzunfqbrs " />
+		<property name="username" value="mskyun721@gmail.com" />
+		<property name="password" value="nlhcniewcljbglqz" /> <!-- 2차 앱 비밀번호 -->
 		<property name="javaMailProperties">
 			<props>
 				<prop key="mail.transport.protocol">smtp</prop>
@@ -66,6 +66,7 @@
 	<context:component-scan base-package="com.team3.service"/>
 	<context:component-scan base-package="com.team3.vo"/>
 	<context:component-scan base-package="com.team3.dao"/>
+	<context:component-scan base-package="com.team3.fileUpload"/>
 
 </beans>
 

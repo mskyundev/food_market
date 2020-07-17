@@ -18,6 +18,7 @@
 		<typeAlias type="com.team3.vo.ProductVO" alias="ProductVO"/>
 		<typeAlias type="com.team3.vo.ProductWishListVO" alias="ProductWishListVO"/>
 		<typeAlias type="com.team3.vo.RecommandVO" alias="RecommandVO"/>
+		<typeAlias type="com.team3.vo.VisitVO" alias="VisitVO"/>
 	</typeAliases>
 	
 	<!-- MyBatis mapper 파일이 추가될 때마다 지정해줘야 . -->

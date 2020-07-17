@@ -37,21 +37,20 @@ public class CartController {
 	
 	//장바구니 상품추가(insert)
 	@RequestMapping("insert")
-	public String insertcart(@ModelAttribute CartVO cartdto ,HttpSession session, 
-			HttpServletResponse response) {
+	public String insertcart(@ModelAttribute CartVO cartVO ,HttpSession session, HttpServletResponse response) {
 		String mb_id = (String)session.getAttribute("mb_id");
-		cartdto.setMb_id(mb_id);
+		cartVO.setMb_id(mb_id);
 		//장바구니 리스트 안에 해당 상품 유무 카운트
-		int count = cartservice.countCart(mb_id, cartdto.getPd_idx());
+		int count = cartservice.countCart(mb_id, cartVO.getPd_idx());
 
 		if(mb_id == null) {
 
-	         return "redirect:/member/login";
-	      }else {
-	    	  int mb_seller = (Integer) session.getAttribute("mb_seller");
-	         if (mb_seller != 2) {
+			return "redirect:/member/login";
+		}else {
+			int mb_seller = (Integer) session.getAttribute("mb_seller");
+			if (mb_seller != 2) {
 	            response.setContentType("text/html; charset=UTF-8");
-	            
+		            
 	            try {
 	               PrintWriter out = response.getWriter();
 	               out.println("<script>alert('판매자 계정입니다.'); history.back();</script>");
@@ -59,37 +58,34 @@ public class CartController {
 	            } catch (IOException e) {
 	               e.printStackTrace();
 	            }
-	         }
-	      }
-
-		
-		if(count == 0) {
-			//해당상품 없을 시 장바구니추가 
-			cartservice.insert(cartdto);
-		}else {
-			//해당상품 있을 시 수량 변경
-			cartservice.updateCart(cartdto);
+	        }else {
+	        	if(count == 0) {
+	 	 			//해당상품 없을 시 장바구니추가 
+	 	 			cartservice.insert(cartVO);
+	 	 		}else {
+	 	 			//해당상품 있을 시 수량 변경
+	 	 			cartservice.updateCart(cartVO);
+	 	 		}
+	        	
+	        }
+			return "redirect:/cart/list";
 		}
 		
-		
-		return "redirect:/cart/list";
 	}
 		
 	//장바구니 목록
 	@RequestMapping("list")
-	public ModelAndView listcart(HttpSession session , 
-			ModelAndView mav, @ModelAttribute CartVO cartdto) {
+	public ModelAndView listcart(HttpSession session, ModelAndView mav, CartVO cartVO) {
 		
 		String mb_id = (String)session.getAttribute("mb_id");
 
-		Map<String, Object> map = new HashMap();
-		int count = cartservice.countCart(mb_id, cartdto.getPd_idx());
+		Map<String, Object> map = new HashMap<String,Object>();
+		int count = cartservice.countCart(mb_id, cartVO.getPd_idx());
 		
 		if(mb_id != null) {
 			
 			//장바구니 목록 리스트
 			List<CartVO> list = cartservice.listcart(mb_id);
-			System.out.println("장바구니 리스트 ~~~~   "+list.toString());
 			//장바구니 총금액
 			int cartmoney = cartservice.cartmoney(mb_id);
 			//배송비			
@@ -108,7 +104,6 @@ public class CartController {
 			
 			mav.setViewName("/cart/cart");
 			mav.addObject("map" , map);
-			System.out.println("장바구니 ~~~~ "+map);
 			
 			return mav;
 		}else {
@@ -118,21 +113,19 @@ public class CartController {
 	
 	//장바구니 상품삭제
 	@RequestMapping(value="/delete" , method = RequestMethod.POST)
-	public String deleteCart(HttpSession session,
-			@RequestParam(value= "chbox[]") List<String> chArr, 
-			CartVO cartdto) throws Exception{
+	public String deleteCart(HttpSession session, @RequestParam(value= "chbox[]") List<String> chArr, CartVO cartVO) throws Exception{
 		
 		String mb_id = (String)session.getAttribute("mb_id");
 	
 		int cart_idx = 0;
 		
 		if(mb_id != null) {
-			cartdto.setMb_id(mb_id);
+			cartVO.setMb_id(mb_id);
 			
 			for(String i : chArr) {
 				cart_idx = Integer.parseInt(i);
-				cartdto.setCart_idx(cart_idx);
-				cartservice.delete(cartdto);
+				cartVO.setCart_idx(cart_idx);
+				cartservice.delete(cartVO);
 			}
 		}
 		return "redirect:/cart/list";
@@ -147,11 +140,11 @@ public class CartController {
 				
 		
 		for(int i = 0; i <pd_idx.length; i++) {
-			CartVO cartdto = new CartVO();
-			cartdto.setMb_id(mb_id);
-			cartdto.setAmount(amount[i]);
-			cartdto.setPd_idx(pd_idx[i]);
-			cartservice.modifyCart(cartdto);
+			CartVO cartVO = new CartVO();
+			cartVO.setMb_id(mb_id);
+			cartVO.setAmount(amount[i]);
+			cartVO.setPd_idx(pd_idx[i]);
+			cartservice.modifyCart(cartVO);
 		}
 		return "redirect:/cart/list";
 	}

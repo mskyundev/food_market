@@ -14,6 +14,7 @@ import com.team3.vo.MemberVO;
 import com.team3.vo.OrdersVO;
 import com.team3.vo.ProductVO;
 import com.team3.vo.RecommandVO;
+import com.team3.vo.VisitVO;
 
 @Repository
 public class AdminDAOImp implements AdminDAO {
@@ -117,7 +118,7 @@ public class AdminDAOImp implements AdminDAO {
 	
 // ================== 방문자 그래프 =================	
 	@Override
-	public List<AdminVO> monthVisit() throws Exception {
+	public List<VisitVO> monthVisit() throws Exception {
 		return sqlSession.selectList(Namespace+".monthVisit");
 	}
 //==================== admin/index 페이지(빅데이터)  ============================

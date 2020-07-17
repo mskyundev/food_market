@@ -9,6 +9,7 @@ import com.team3.vo.MemberVO;
 import com.team3.vo.OrdersVO;
 import com.team3.vo.ProductVO;
 import com.team3.vo.RecommandVO;
+import com.team3.vo.VisitVO;
 
 
 public interface AdminDAO {
@@ -31,7 +32,7 @@ public interface AdminDAO {
 	public int safari() throws Exception;
 	public int etc() throws Exception;
 	
-	public List<AdminVO> monthVisit() throws Exception;
+	public List<VisitVO> monthVisit() throws Exception;
 	
 	public List<ProductVO> mostSoldItem() throws Exception;
 	public List<ProductVO> popularItem(Map<String, Integer> map) throws Exception;

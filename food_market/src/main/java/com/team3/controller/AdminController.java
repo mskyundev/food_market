@@ -19,13 +19,13 @@ import com.team3.page.PagingMaker;
 import com.team3.service.AdminService;
 import com.team3.service.CsService;
 import com.team3.service.ProductReviewService;
-import com.team3.vo.AdminVO;
 import com.team3.vo.CartVO;
 import com.team3.vo.CsVO;
 import com.team3.vo.MemberVO;
 import com.team3.vo.OrdersVO;
 import com.team3.vo.ProductReviewVO;
 import com.team3.vo.ProductVO;
+import com.team3.vo.VisitVO;
 
 
 @Controller
@@ -95,7 +95,7 @@ public class AdminController {
 			orderMap.put("od_date", thisMonth);
 			
 			// 방문자 통계(1달)
-			List<AdminVO> monthVisit = adminService.monthVisit();
+			List<VisitVO> monthVisit = adminService.monthVisit();
 			for(int i=0;i<monthVisit.size();i++) {
 				String day = monthVisit.get(i).getDate().toString();
 				String[] days = day.split("-");
@@ -181,7 +181,7 @@ public class AdminController {
 	
 	// 전체 회원 리스트 페이지
 	@RequestMapping("/admin/memberList")
-	public String memberList(MemberVO mvo,Model model, PageCriteria pCri, HttpSession session) throws Exception {
+	public String memberList(MemberVO mVO, Model model, PageCriteria pCri, HttpSession session) throws Exception {
 		String returnPage ;
 		String se_id = (String) session.getAttribute("mb_id");
 		if (se_id == null) {
@@ -189,18 +189,18 @@ public class AdminController {
 		}else {
 			List<MemberVO> list = null;
 			int page = pCri.getPage();
-			int mb_seller = mvo.getMb_seller();
+			int mb_seller = mVO.getMb_seller();
 	
 			pCri = new PageCriteria(page,25);
 			Map<String,Object> map = new HashMap<String,Object>();
-			map.put("mb_seller", mvo.getMb_seller());
+			map.put("mb_seller", mVO.getMb_seller());
 			map.put("startPage", pCri.getStartPage());
 			map.put("numPerPage", pCri.getNumPerPage());
 			
 			PagingMaker pm = new PagingMaker();
 			pm.setCri(pCri);
 			
-			if (mvo.getMb_seller()==1 || mvo.getMb_seller()==2) {
+			if (mVO.getMb_seller()==1 || mVO.getMb_seller()==2) {
 				list = adminService.SellerList(map); // 판매자/구매자별 회원 목록
 				pm.setTotalData(adminService.SellerCount(map)); // 판매자/구매자별 회원 수
 			}else {
@@ -219,7 +219,7 @@ public class AdminController {
 	
 	// 전체 상품 리스트 페이지
 	@RequestMapping("/admin/productList")
-	public String productList(ProductVO pvo,Model model,PageCriteria pCri,HttpSession session) throws Exception {
+	public String productList(ProductVO pVO, Model model,PageCriteria pCri,HttpSession session) throws Exception {
 		String returnPage ;
 		String se_id = (String) session.getAttribute("mb_id");
 		if (se_id == null) {
@@ -227,18 +227,18 @@ public class AdminController {
 		}else {
 			List<ProductVO> list = null;
 			int page=pCri.getPage();
-			String pd_category=pvo.getPd_category();
+			String pd_category=pVO.getPd_category();
 			pCri = new PageCriteria(page,25);
 			
 			Map<String,Object> map = new HashMap<String,Object>();
-			map.put("pd_category", pvo.getPd_category());
+			map.put("pd_category", pVO.getPd_category());
 			map.put("startPage", pCri.getStartPage());
 			map.put("numPerPage", pCri.getNumPerPage());
 			
 			PagingMaker pm = new PagingMaker();
 			pm.setCri(pCri);
 			
-			if (pvo.getPd_category()==null || pvo.getPd_category()=="") {
+			if (pVO.getPd_category()==null || pVO.getPd_category()=="") {
 				list=adminService.ProductList(map); // 전체 상품 목록
 				pm.setTotalData(adminService.ProductCount()); // 전체 상품 수
 			}else {
@@ -257,15 +257,15 @@ public class AdminController {
 	
 	// 판매자별 페이지
 	@RequestMapping("/admin/sellerList")
-	public String sellerList(ProductVO pvo, MemberVO mvo,Model model,PageCriteria pCri, HttpSession session,
+	public String sellerList(ProductVO pVO, MemberVO mVO,Model model,PageCriteria pCri, HttpSession session,
 			@RequestParam(value="productOrder",required = false)String productOrder) throws Exception {
 		String returnPage ;
 		String se_id = (String) session.getAttribute("mb_id");
 		if (se_id == null) {
 			returnPage = "redirect:/";
 		}else {
-			String mb_id=mvo.getMb_id();
-			String pd_category=pvo.getPd_category();
+			String mb_id=mVO.getMb_id();
+			String pd_category=pVO.getPd_category();
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("mb_id", mb_id);
 			map.put("pd_category", pd_category);
@@ -278,7 +278,7 @@ public class AdminController {
 				int sellerProductCount = adminService.sellerProductCount(map); // 판매자별 상품 수
 				int sellerCategoryCount = adminService.sellerCategoryCount(map); // 판매자+카테고리별 상품 수
 
-				if (pvo.getPd_category()==null || pvo.getPd_category()=="") {
+				if (pVO.getPd_category()==null || pVO.getPd_category()=="") {
 					sellerProductList=adminService.SellList(map); // 판매자별 상품 목록
 					pm.setTotalData(sellerProductCount); 
 				}else {
@@ -305,9 +305,9 @@ public class AdminController {
 	
 	// 구매자별 페이지
 	@RequestMapping("/admin/detailCustomer")
-	public String detailCustomer(OrdersVO odvo,MemberVO mvo,Model model,PageCriteria pCri) throws Exception {
+	public String detailCustomer(OrdersVO odVO,MemberVO mVO,Model model,PageCriteria pCri) throws Exception {
 		List<OrdersVO> orderList = null;	
-		String mb_id=mvo.getMb_id();
+		String mb_id=mVO.getMb_id();
 		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("mb_id", mb_id);
@@ -340,14 +340,14 @@ public class AdminController {
 	// 상품 상세페이지
 	@RequestMapping("/admin/detailProduct")
 
-	public String detailProduct(Model model, ProductVO pvo, PageCriteria pCri, HttpSession session) throws Exception {
+	public String detailProduct(Model model, ProductVO pVO, PageCriteria pCri, HttpSession session) throws Exception {
 		String returnPage ;
 		String se_id = (String) session.getAttribute("mb_id");
 		if (se_id == null) {
 			returnPage = "redirect:/";
 		}else {
-			String pd_name = pvo.getPd_name();
-			int pd_idx = pvo.getPd_idx();
+			String pd_name = pVO.getPd_name();
+			int pd_idx = pVO.getPd_idx();
 			ProductVO ProductVO = adminService.detailProduct(pd_idx); // 상품 정보 불러오기
 			ProductReviewVO ProductReviewVO = new ProductReviewVO();
 			ProductReviewVO.setProduct_pd_idx(pd_idx);
